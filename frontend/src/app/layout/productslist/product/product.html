@@ -1,0 +1,27 @@
+<div class="card h-100">
+  @if (myProduct.image) {
+    <img [src]="staticURL + myProduct.image" class="card-img-top" [alt]="myProduct.title">
+  } @else {
+    <div class="no-image d-flex align-items-center justify-content-center bg-light text-muted">
+      No image
+    </div>
+  }
+
+  <div class="card-body d-flex flex-column">
+    <h5 class="card-title">{{ myProduct.title }}</h5>
+    <p class="card-text fw-bold">{{ myProduct.price }} EGP</p>
+
+    @if (myProduct.stockLabel) {
+      <span class="badge mb-2 align-self-start"
+        [class.bg-danger]="!myProduct.inStock"
+        [class.bg-warning]="myProduct.inStock"
+        [class.text-dark]="myProduct.inStock">
+        {{ myProduct.stockLabel }}
+      </span>
+    }
+
+    <a [routerLink]="'/product-list/' + myProduct.slug" class="btn btn-outline-primary mt-auto">
+      View Details
+    </a>
+  </div>
+</div>

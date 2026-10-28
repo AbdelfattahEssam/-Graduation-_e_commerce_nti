@@ -1,0 +1,52 @@
+<!-- Hero -->
+<div class="hero text-center text-white d-flex align-items-center justify-content-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Style that fits you</h1>
+    <p class="lead mb-4">Clothes for men, women and kids. Pay when you receive your order.</p>
+    <a routerLink="/product-list" class="btn btn-light btn-lg">Shop now</a>
+  </div>
+</div>
+
+<!-- Latest products -->
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Latest products</h2>
+    <a routerLink="/product-list">View all</a>
+  </div>
+
+  <div class="row g-4">
+    @for (product of latestProducts; track product._id) {
+      <div class="col-12 col-sm-6 col-md-3">
+        <app-product [myProduct]="product"></app-product>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Reviews -->
+@if (testimonials.length > 0) {
+  <div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">What our customers say</h2>
+      <a routerLink="/testimonials">All reviews</a>
+    </div>
+
+    <div class="row g-3">
+      @for (t of testimonials; track t._id) {
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="stars-display">
+                @for (s of stars; track s) {
+                  <span [class.filled]="s <= t.rating">★</span>
+                }
+              </div>
+              <p class="mt-2">{{ t.content }}</p>
+              <strong>{{ t.userId.name }}</strong>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

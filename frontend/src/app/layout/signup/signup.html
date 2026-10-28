@@ -1,0 +1,53 @@
+<div class="container" style="max-width: 450px;">
+  <h1 class="mb-4">Sign Up</h1>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-control" formControlName="name"
+        [class.is-invalid]="signupForm.controls.name.invalid && signupForm.controls.name.touched">
+      @if (signupForm.controls.name.invalid && signupForm.controls.name.touched) {
+        <div class="invalid-feedback">Name must be at least 3 characters</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email address</label>
+      <input type="email" class="form-control" formControlName="email"
+        [class.is-invalid]="signupForm.controls.email.invalid && signupForm.controls.email.touched">
+      @if (signupForm.controls.email.invalid && signupForm.controls.email.touched) {
+        <div class="invalid-feedback">Please enter a valid email</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-control" formControlName="password"
+        [class.is-invalid]="signupForm.controls.password.invalid && signupForm.controls.password.touched">
+      @if (signupForm.controls.password.invalid && signupForm.controls.password.touched) {
+        <div class="invalid-feedback">Password must be at least 6 characters</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Confirm Password</label>
+      <input type="password" class="form-control" formControlName="confirmPassword"
+        [class.is-invalid]="signupForm.controls.confirmPassword.touched && (signupForm.controls.confirmPassword.invalid || signupForm.hasError('mismatch'))">
+      @if (signupForm.controls.confirmPassword.touched && signupForm.hasError('mismatch')) {
+        <div class="invalid-feedback">Passwords do not match</div>
+      }
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
+      {{ isLoading ? 'Creating account...' : 'Sign Up' }}
+    </button>
+  </form>
+
+  <p class="mt-3 text-center">
+    Already have an account? <a routerLink="/login">Login</a>
+  </p>
+</div>

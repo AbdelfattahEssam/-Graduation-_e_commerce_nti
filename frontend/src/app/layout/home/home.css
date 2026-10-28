@@ -1,0 +1,15 @@
+.hero {
+    min-height: 350px;
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    border-radius: 0.5rem;
+    margin: 0 auto;
+}
+
+.stars-display {
+    color: #ccc;
+    font-size: 1.2rem;
+}
+
+.stars-display .filled {
+    color: #f5a623;
+}

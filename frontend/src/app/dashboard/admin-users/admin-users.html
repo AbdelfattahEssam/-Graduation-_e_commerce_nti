@@ -1,0 +1,135 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="mb-0">Users <span class="text-muted fs-5">({{ total }})</span></h1>
+  @if (!showAdminForm) {
+    <button type="button" class="btn btn-primary" (click)="openAdminForm()">Add admin</button>
+  }
+</div>
+
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (showAdminForm) {
+  <form [formGroup]="adminForm" (ngSubmit)="createAdmin()" class="card card-body mb-4" style="max-width: 500px;">
+    <h5>New admin</h5>
+
+    @if (adminError) {
+      <div class="alert alert-danger">{{ adminError }}</div>
+    }
+
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-control" formControlName="name"
+        [class.is-invalid]="adminForm.controls.name.invalid && adminForm.controls.name.touched">
+      @if (adminForm.controls.name.invalid && adminForm.controls.name.touched) {
+        <div class="invalid-feedback">Name must be at least 3 characters</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" formControlName="email"
+        [class.is-invalid]="adminForm.controls.email.invalid && adminForm.controls.email.touched">
+      @if (adminForm.controls.email.invalid && adminForm.controls.email.touched) {
+        <div class="invalid-feedback">Please enter a valid email</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-control" formControlName="password"
+        [class.is-invalid]="adminForm.controls.password.invalid && adminForm.controls.password.touched">
+      @if (adminForm.controls.password.invalid && adminForm.controls.password.touched) {
+        <div class="invalid-feedback">Password must be at least 6 characters</div>
+      }
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="isCreating">
+        {{ isCreating ? 'Creating...' : 'Create admin' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary" (click)="closeAdminForm()">Cancel</button>
+    </div>
+  </form>
+}
+
+<form class="row g-2 mb-3" (ngSubmit)="doSearch()">
+  <div class="col-8 col-md-5">
+    <input type="text" class="form-control" placeholder="Search by name or email..." [formControl]="search">
+  </div>
+  <div class="col-4 col-md-2">
+    <button type="submit" class="btn btn-outline-primary w-100">Search</button>
+  </div>
+</form>
+
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+@if (!isLoading && users.length == 0) {
+  <div class="alert alert-info">No users found.</div>
+}
+
+@if (users.length > 0) {
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of users; track u._id) {
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.mobile || '-' }}</td>
+            <td>{{ u.createdAt | date: 'dd MMM yyyy' }}</td>
+            <td>
+              @if (u.isBlocked) {
+                <span class="badge bg-danger">Blocked</span>
+              } @else {
+                <span class="badge bg-success">Active</span>
+              }
+            </td>
+            <td class="text-end">
+              <button type="button" class="btn btn-sm"
+                [class.btn-outline-danger]="!u.isBlocked"
+                [class.btn-outline-success]="u.isBlocked"
+                (click)="toggleBlock(u)">
+                {{ u.isBlocked ? 'Unblock' : 'Block' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalPages > 1) {
+    <nav class="mt-3">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="page == 1">
+          <button class="page-link" (click)="goToPage(page - 1)">Previous</button>
+        </li>
+        @for (n of pages; track n) {
+          <li class="page-item" [class.active]="n == page">
+            <button class="page-link" (click)="goToPage(n)">{{ n }}</button>
+          </li>
+        }
+        <li class="page-item" [class.disabled]="page == totalPages">
+          <button class="page-link" (click)="goToPage(page + 1)">Next</button>
+        </li>
+      </ul>
+    </nav>
+  }
+}

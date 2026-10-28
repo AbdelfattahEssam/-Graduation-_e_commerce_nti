@@ -1,0 +1,117 @@
+<div class="container">
+  <h1 class="mb-4">My Cart</h1>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && items.length == 0) {
+    <div class="alert alert-info">
+      Your cart is empty. <a routerLink="/product-list">Browse products</a>
+    </div>
+  }
+
+  @if (items.length > 0) {
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.productId) {
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  @if (item.product?.image) {
+                    <img [src]="staticURL + item.product?.image" class="cart-img rounded" alt="">
+                  } @else {
+                    <div class="cart-img bg-light rounded"></div>
+                  }
+                  <div>
+                    @if (item.product) {
+                      <a [routerLink]="'/product-list/' + item.product.slug">{{ item.product.title }}</a>
+                    } @else {
+                      <span class="text-muted">Unavailable product</span>
+                    }
+
+                    @if (item.unavailable) {
+                      <div class="text-danger small">This product is no longer available. Please remove it.</div>
+                    } @else if (item.outOfStock) {
+                      <div class="text-danger small">Out of stock</div>
+                    } @else if (item.exceedsStock) {
+                      <div class="text-danger small">Only {{ item.product?.stock }} left. Please reduce the quantity.</div>
+                    }
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                @if (item.isPriceChanged) {
+                  <div class="text-muted small">Old price: <s>{{ item.oldPrice }} EGP</s></div>
+                  <div class="fw-bold">New price: {{ item.currentPrice }} EGP</div>
+                  <button type="button" class="btn btn-sm btn-warning mt-1" (click)="acceptPrice(item)">
+                    Accept new price
+                  </button>
+                } @else {
+                  {{ item.currentPrice }} EGP
+                }
+              </td>
+
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="changeQuantity(item, -1)">-</button>
+                  <span>{{ item.quantity }}</span>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="changeQuantity(item, 1)">+</button>
+                </div>
+              </td>
+
+              <td>{{ lineTotal(item) }} EGP</td>
+
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(item)">Remove</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row justify-content-end">
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <span>Subtotal</span>
+              <strong>{{ subtotal }} EGP</strong>
+            </div>
+            <p class="text-muted small mt-2 mb-3">Shipping cost is calculated at checkout.</p>
+
+            @if (hasIssues) {
+              <div class="alert alert-warning small">
+                Please review the items above (price changes or stock issues) before checking out.
+              </div>
+            }
+
+            @if (isLoggedIn) {
+              <button type="button" class="btn btn-primary w-100" routerLink="/checkout" [disabled]="hasIssues">
+                Proceed to Checkout
+              </button>
+            } @else {
+              <a routerLink="/login" class="btn btn-primary w-100">Login to place your order</a>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

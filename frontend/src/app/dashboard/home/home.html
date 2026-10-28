@@ -1,0 +1,49 @@
+<h1 class="mb-4">Dashboard</h1>
+
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (stats) {
+  <div class="row g-3">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card text-bg-primary h-100">
+        <div class="card-body">
+          <div class="small">New orders today</div>
+          <div class="display-5 fw-bold">{{ stats.newOrdersToday }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card text-bg-warning h-100">
+        <div class="card-body">
+          <div class="small">Pending orders</div>
+          <div class="display-5 fw-bold">{{ stats.pendingOrders }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card text-bg-danger h-100">
+        <div class="card-body">
+          <div class="small">Out of stock products</div>
+          <div class="display-5 fw-bold">{{ stats.outOfStockProducts }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card text-bg-info h-100">
+        <div class="card-body">
+          <div class="small">New testimonials to review</div>
+          <div class="display-5 fw-bold">{{ stats.pendingTestimonials }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

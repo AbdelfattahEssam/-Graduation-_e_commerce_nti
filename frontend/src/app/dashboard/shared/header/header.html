@@ -1,0 +1,43 @@
+<div class="container">
+  <header
+    class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom"
+  >
+    <span class="fw-bold fs-5">My Store · Admin</span>
+
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a routerLink="/dashboard/home" class="nav-link" routerLinkActive="active">Home</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/products" class="nav-link" routerLinkActive="active">Products</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/categories" class="nav-link" routerLinkActive="active"
+          >Categories</a
+        >
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/orders" class="nav-link" routerLinkActive="active">Orders</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/testimonials" class="nav-link" routerLinkActive="active"
+          >Testimonials</a
+        >
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/faq" class="nav-link" routerLinkActive="active">FAQ</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/shipping" class="nav-link" routerLinkActive="active">Shipping</a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/dashboard/users" class="nav-link" routerLinkActive="active">Users</a>
+      </li>
+    </ul>
+
+    <div class="d-flex gap-2">
+      <a routerLink="/" class="btn btn-outline-secondary">View store</a>
+      <button type="button" class="btn btn-primary" (click)="logout()">Logout</button>
+    </div>
+  </header>
+</div>

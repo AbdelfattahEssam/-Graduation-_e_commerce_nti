@@ -1,0 +1,66 @@
+<div class="container">
+  <a routerLink="/product-list" class="btn btn-link ps-0 mb-3">← Back to products</a>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (myProduct && !isLoading) {
+    <div class="row g-4">
+      <div class="col-md-5">
+        @if (myProduct.image) {
+          <img [src]="staticURL + myProduct.image" class="img-fluid rounded" [alt]="myProduct.title">
+        } @else {
+          <div class="no-image d-flex align-items-center justify-content-center bg-light text-muted rounded">
+            No image
+          </div>
+        }
+      </div>
+
+      <div class="col-md-7">
+        <p class="text-muted mb-1">
+          {{ myProduct.categoryId.name }} / {{ myProduct.subcategoryId.name }}
+        </p>
+
+        <h1>{{ myProduct.title }}</h1>
+
+        <h3 class="my-3">{{ myProduct.price }} EGP</h3>
+
+        @if (myProduct.stockLabel) {
+          <span class="badge mb-3"
+            [class.bg-danger]="!myProduct.inStock"
+            [class.bg-warning]="myProduct.inStock"
+            [class.text-dark]="myProduct.inStock">
+            {{ myProduct.stockLabel }}
+          </span>
+        }
+
+        <p>{{ myProduct.description }}</p>
+                @if (myProduct.inStock) {
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <button type="button" class="btn btn-outline-secondary" (click)="changeQuantity(-1)">-</button>
+            <span class="px-2">{{ quantity }}</span>
+            <button type="button" class="btn btn-outline-secondary" (click)="changeQuantity(1)">+</button>
+          </div>
+
+          <button type="button" class="btn btn-primary" (click)="addToCart()" [disabled]="isAdding">
+            {{ isAdding ? 'Adding...' : 'Add to Cart' }}
+          </button>
+        } @else {
+          <button type="button" class="btn btn-secondary" disabled>Out of Stock</button>
+        }
+
+        @if (cartMessage) {
+          <div class="alert alert-success mt-3">{{ cartMessage }}</div>
+        }
+        @if (cartError) {
+          <div class="alert alert-danger mt-3">{{ cartError }}</div>
+        }
+      </div>
+    </div>
+  }
+</div>

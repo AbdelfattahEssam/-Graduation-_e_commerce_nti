@@ -1,0 +1,156 @@
+<div class="container" style="max-width: 800px;">
+  <h1 class="mb-4">My Account</h1>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (user) {
+    <!-- Profile -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Profile</h5>
+
+        @if (profileMessage) {
+          <div class="alert alert-success">{{ profileMessage }}</div>
+        }
+        @if (profileError) {
+          <div class="alert alert-danger">{{ profileError }}</div>
+        }
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" [value]="user.email" disabled>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" formControlName="name"
+              [class.is-invalid]="profileForm.controls.name.invalid && profileForm.controls.name.touched">
+            @if (profileForm.controls.name.invalid && profileForm.controls.name.touched) {
+              <div class="invalid-feedback">Name must be at least 3 characters</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Mobile</label>
+            <input type="text" class="form-control" formControlName="mobile" placeholder="01012345678"
+              [class.is-invalid]="profileForm.controls.mobile.invalid && profileForm.controls.mobile.touched">
+            @if (profileForm.controls.mobile.invalid && profileForm.controls.mobile.touched) {
+              <div class="invalid-feedback">Please enter a valid Egyptian mobile number</div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Addresses -->
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title mb-0">Addresses</h5>
+          @if (!showAddressForm) {
+            <button type="button" class="btn btn-sm btn-primary" (click)="openAddForm()">Add address</button>
+          }
+        </div>
+
+        @if (addresses.length == 0 && !showAddressForm) {
+          <p class="text-muted">You have no addresses yet.</p>
+        }
+
+        @for (address of addresses; track address._id) {
+          <div class="border rounded p-3 mb-2">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <strong>{{ address.title }}</strong>
+                @if (address.isDefault) {
+                  <span class="badge bg-success ms-2">Default</span>
+                }
+                <div>{{ address.street }}, {{ address.city }}, {{ address.governorate }}</div>
+                @if (address.details) {
+                  <div class="text-muted small">{{ address.details }}</div>
+                }
+              </div>
+
+              <div class="d-flex gap-1 flex-wrap justify-content-end">
+                @if (!address.isDefault) {
+                  <button type="button" class="btn btn-sm btn-outline-success" (click)="makeDefault(address)">Set default</button>
+                }
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="openEditForm(address)">Edit</button>
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteAddress(address)">Delete</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (showAddressForm) {
+          <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" class="border rounded p-3 mt-3">
+            <h6>{{ editingId ? 'Edit address' : 'New address' }}</h6>
+
+            @if (addressError) {
+              <div class="alert alert-danger">{{ addressError }}</div>
+            }
+
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" formControlName="title" placeholder="Home / Work"
+                  [class.is-invalid]="addressForm.controls.title.invalid && addressForm.controls.title.touched">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Governorate</label>
+                <select class="form-select" formControlName="governorate"
+                  [class.is-invalid]="addressForm.controls.governorate.invalid && addressForm.controls.governorate.touched">
+                  <option value="">Select governorate</option>
+                  @for (z of zones; track z._id) {
+                    <option [value]="z.governorate">
+                      {{ z.governorate }}{{ z.isAvailable ? '' : ' (shipping not available)' }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input type="text" class="form-control" formControlName="city">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Street</label>
+                <input type="text" class="form-control" formControlName="street"
+                  [class.is-invalid]="addressForm.controls.street.invalid && addressForm.controls.street.touched">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Details (floor, apartment...)</label>
+                <input type="text" class="form-control" formControlName="details">
+              </div>
+
+              @if (!editingId) {
+                <div class="col-12">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isDefault" formControlName="isDefault">
+                    <label class="form-check-label" for="isDefault">Set as default address</label>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Save address</button>
+              <button type="button" class="btn btn-outline-secondary" (click)="closeAddressForm()">Cancel</button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  }
+</div>

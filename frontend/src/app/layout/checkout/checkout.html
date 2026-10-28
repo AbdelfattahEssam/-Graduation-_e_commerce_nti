@@ -1,0 +1,143 @@
+<div class="container" style="max-width: 900px;">
+
+  @if (placedOrder) {
+    <div class="text-center py-5">
+      <h1 class="text-success mb-3">Order placed successfully 🎉</h1>
+      <p class="mb-1">Your order number:</p>
+      <p><code>{{ placedOrder._id }}</code></p>
+      <p>Total to pay on delivery: <strong>{{ placedOrder.totalPrice }} EGP</strong></p>
+      <p class="text-muted">Status: {{ placedOrder.status }}</p>
+      <a routerLink="/product-list" class="btn btn-primary mt-2">Continue shopping</a>
+    </div>
+  } @else {
+
+    <h1 class="mb-4">Checkout</h1>
+
+    @if (isLoading) {
+      <p>Loading...</p>
+    }
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">
+        {{ errorMessage }}
+        <a routerLink="/cart" class="alert-link ms-2">Review cart</a>
+      </div>
+    }
+
+    @if (!isLoading && items.length == 0) {
+      <div class="alert alert-info">
+        Your cart is empty. <a routerLink="/product-list">Browse products</a>
+      </div>
+    }
+
+    @if (!isLoading && items.length > 0) {
+      @if (hasIssues) {
+        <div class="alert alert-warning">
+          Some items in your cart need attention (price change or stock).
+          <a routerLink="/cart" class="alert-link">Go back to the cart</a>
+        </div>
+      }
+
+      <div class="row g-4">
+        <div class="col-md-7">
+
+          <!-- Address -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Delivery address</h5>
+
+              @if (addresses.length == 0) {
+                <p class="text-muted">You have no addresses yet.</p>
+                <a routerLink="/account" class="btn btn-outline-primary">Add an address</a>
+              } @else {
+                @for (address of addresses; track address._id) {
+                  <div class="form-check border rounded p-3 ps-5 mb-2">
+                    <input class="form-check-input" type="radio" name="address"
+                      [id]="'addr-' + address._id" [value]="address._id"
+                      [checked]="address._id == selectedAddressId"
+                      (change)="selectedAddressId = address._id">
+                    <label class="form-check-label w-100" [for]="'addr-' + address._id">
+                      <strong>{{ address.title }}</strong>
+                      @if (address.isDefault) {
+                        <span class="badge bg-success ms-2">Default</span>
+                      }
+                      <div>{{ address.street }}, {{ address.city }}, {{ address.governorate }}</div>
+                    </label>
+                  </div>
+                }
+
+                @if (selectedAddress && !shippingAvailable) {
+                  <div class="alert alert-danger mt-2">
+                    Sorry, shipping is not available to {{ selectedAddress.governorate }}.
+                    Please choose another address.
+                  </div>
+                }
+
+                <a routerLink="/account" class="small">Manage addresses</a>
+              }
+            </div>
+          </div>
+
+          <!-- Mobile -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Mobile number</h5>
+              <input type="text" class="form-control" [formControl]="mobile" placeholder="01012345678"
+                [class.is-invalid]="mobile.invalid && mobile.touched">
+              @if (mobile.invalid && mobile.touched) {
+                <div class="invalid-feedback">Please enter a valid Egyptian mobile number</div>
+              }
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Payment</h5>
+              <p class="mb-0">Cash on Delivery</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="col-md-5">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Order summary</h5>
+
+              @for (item of items; track item.productId) {
+                <div class="d-flex justify-content-between small mb-1">
+                  <span>{{ item.product?.title }} × {{ item.quantity }}</span>
+                  <span>{{ (item.currentPrice ?? 0) * item.quantity }} EGP</span>
+                </div>
+              }
+
+              <hr>
+
+              <div class="d-flex justify-content-between">
+                <span>Subtotal</span>
+                <span>{{ subtotal }} EGP</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Shipping</span>
+                <span>{{ shippingAvailable ? shippingCost + ' EGP' : '-' }}</span>
+              </div>
+
+              <hr>
+
+              <div class="d-flex justify-content-between fw-bold fs-5">
+                <span>Total</span>
+                <span>{{ total }} EGP</span>
+              </div>
+
+              <button type="button" class="btn btn-primary w-100 mt-3"
+                [disabled]="!canPlaceOrder" (click)="placeOrder()">
+                {{ isPlacing ? 'Placing order...' : 'Place order' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

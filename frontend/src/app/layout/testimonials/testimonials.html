@@ -1,0 +1,77 @@
+<div class="container" style="max-width: 800px;">
+  <h1 class="mb-4">Customer Reviews</h1>
+
+  <!-- Form -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Share your experience</h5>
+
+      @if (!isLoggedIn) {
+        <p class="mb-0">Please <a routerLink="/login">login</a> to write a review.</p>
+      } @else {
+        @if (successMessage) {
+          <div class="alert alert-success">{{ successMessage }}</div>
+        }
+        @if (formError) {
+          <div class="alert alert-danger">{{ formError }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="send()">
+          <div class="mb-3">
+            <label class="form-label d-block">Rating</label>
+            @for (s of stars; track s) {
+              <button type="button" class="star-btn" [class.active]="s <= rating"
+                (click)="setRating(s)" [attr.aria-label]="s + ' stars'">★</button>
+            }
+            @if (form.controls.rating.invalid && form.controls.rating.touched) {
+              <div class="text-danger small">Please choose a rating</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Your review</label>
+            <textarea class="form-control" rows="3" formControlName="content"
+              [class.is-invalid]="form.controls.content.invalid && form.controls.content.touched"></textarea>
+            @if (form.controls.content.invalid && form.controls.content.touched) {
+              <div class="invalid-feedback">Please write your review (max 500 characters)</div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="isSending">
+            {{ isSending ? 'Sending...' : 'Submit review' }}
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+
+  <!-- Approved list -->
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage && testimonials.length == 0) {
+    <div class="alert alert-info">No reviews yet. Be the first!</div>
+  }
+
+  @for (t of testimonials; track t._id) {
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <strong>{{ t.userId.name }}</strong>
+          <span class="text-muted small">{{ t.createdAt | date: 'dd MMM yyyy' }}</span>
+        </div>
+        <div class="stars-display">
+          @for (s of stars; track s) {
+            <span [class.filled]="s <= t.rating">★</span>
+          }
+        </div>
+        <p class="mb-0 mt-2">{{ t.content }}</p>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,52 @@
+<h1 class="mb-3">Shipping</h1>
+<p class="text-muted">Set the shipping cost for each governorate, or disable shipping to it.</p>
+
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+@if (zones.length > 0) {
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Governorate</th>
+          <th style="width: 220px;">Cost (EGP)</th>
+          <th>Shipping</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (z of zones; track z._id) {
+          <tr [class.table-secondary]="!z.isAvailable">
+            <td>{{ z.governorate }}</td>
+            <td>
+              <div class="input-group input-group-sm">
+                <input type="number" min="0" class="form-control"
+                  [value]="costs[z._id]" (input)="onCostInput(z, $event)"
+                  [class.is-invalid]="!isValid(z)">
+                <button type="button" class="btn btn-primary"
+                  [disabled]="!isChanged(z) || !isValid(z)" (click)="saveCost(z)">Save</button>
+              </div>
+            </td>
+            <td>
+              <button type="button" class="btn btn-sm"
+                [class.btn-success]="z.isAvailable"
+                [class.btn-outline-secondary]="!z.isAvailable"
+                (click)="toggleAvailable(z)">
+                {{ z.isAvailable ? 'Available' : 'Not available' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

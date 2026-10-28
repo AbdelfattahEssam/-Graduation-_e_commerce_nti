@@ -1,16 +1,41 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
 
 const app = express();
+const path = require("path");
+const productRoutes = require("./routes/product.routes");
+const { notFound, errorHandler } = require("./middlewares/error.middleware");
+const authRoutes = require("./routes/auth.routes");
+const categoryRoutes = require("./routes/category.routes");
+const subcategoryRoutes = require("./routes/subcategory.routes");
+const cartRoutes = require('./routes/cart.routes');
+const addressRoutes = require('./routes/address.routes');
+const shippingZoneRoutes = require('./routes/shippingZone.routes');
+const orderRoutes = require('./routes/order.routes');
+const testimonialRoutes = require('./routes/testimonial.routes');
+const faqRoutes = require('./routes/faq.routes');
+const adminRoutes = require('./routes/admin.routes');
 
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
-app.use(morgan('dev'));
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+app.use(morgan("dev"));
 
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
-
-
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/subcategories", subcategoryRoutes);
+app.use("/api/products", productRoutes);
+app.use('/api/cart', cartRoutes); 
+app.use('/api/addresses', addressRoutes);
+app.use('/api/shipping-zones', shippingZoneRoutes);
+app.use('/api/orders', orderRoutes); 
+app.use('/api/testimonials', testimonialRoutes); 
+app.use('/api/faqs', faqRoutes);
+app.use('/api/admin', adminRoutes);
+app.use(notFound);
+app.use(errorHandler);
 module.exports = app;

@@ -1,0 +1,99 @@
+<div style="max-width: 700px;">
+  <a routerLink="/dashboard/products" class="btn btn-link ps-0 mb-2">← Back to products</a>
+
+  <h1 class="mb-4">{{ editingId ? 'Edit product' : 'Add product' }}</h1>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control" formControlName="title"
+          [class.is-invalid]="form.controls.title.invalid && form.controls.title.touched">
+        @if (form.controls.title.invalid && form.controls.title.touched) {
+          <div class="invalid-feedback">Title is required</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="3" formControlName="description"></textarea>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <label class="form-label">Price (EGP)</label>
+          <input type="number" min="0" class="form-control" formControlName="price"
+            [class.is-invalid]="form.controls.price.invalid && form.controls.price.touched">
+          @if (form.controls.price.invalid && form.controls.price.touched) {
+            <div class="invalid-feedback">Enter a valid price</div>
+          }
+        </div>
+
+        <div class="col-6">
+          <label class="form-label">Stock</label>
+          <input type="number" min="0" class="form-control" formControlName="stock"
+            [class.is-invalid]="form.controls.stock.invalid && form.controls.stock.touched">
+          @if (form.controls.stock.invalid && form.controls.stock.touched) {
+            <div class="invalid-feedback">Enter a valid stock</div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <label class="form-label">Category</label>
+          <select class="form-select" formControlName="categoryId" (change)="onCategoryChange()"
+            [class.is-invalid]="form.controls.categoryId.invalid && form.controls.categoryId.touched">
+            <option value="">Select category</option>
+            @for (c of categories; track c._id) {
+              <option [value]="c._id">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="col-6">
+          <label class="form-label">Subcategory</label>
+          <select class="form-select" formControlName="subcategoryId"
+            [class.is-invalid]="form.controls.subcategoryId.invalid && form.controls.subcategoryId.touched">
+            <option value="">Select subcategory</option>
+            @for (s of subcategories; track s._id) {
+              <option [value]="s._id">{{ s.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Image</label>
+        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+        @if (fileError) {
+          <div class="text-danger small mt-1">{{ fileError }}</div>
+        }
+
+        @if (previewUrl) {
+          <img [src]="previewUrl" class="preview rounded mt-2" alt="">
+        } @else if (currentImage) {
+          <img [src]="staticURL + currentImage" class="preview rounded mt-2" alt="">
+        }
+      </div>
+
+      <div class="form-check mb-4">
+        <input type="checkbox" class="form-check-input" id="isActive" formControlName="isActive">
+        <label class="form-check-label" for="isActive">Active (visible in the store)</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+        {{ isSaving ? 'Saving...' : 'Save product' }}
+      </button>
+    </form>
+  }
+</div>

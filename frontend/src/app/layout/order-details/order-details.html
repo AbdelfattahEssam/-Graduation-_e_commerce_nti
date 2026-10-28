@@ -1,0 +1,86 @@
+<div class="container" style="max-width: 900px;">
+  <a routerLink="/orders" class="btn btn-link ps-0 mb-3">← Back to my orders</a>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (order) {
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="mb-0">Order <code>#{{ order._id.slice(-6) }}</code></h1>
+      <span class="badge fs-6 bg-secondary">{{ order.status }}</span>
+    </div>
+
+    <p class="text-muted">{{ order.date | date: 'dd MMM yyyy, hh:mm a' }}</p>
+
+    <div class="row g-4">
+      <div class="col-md-7">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Items</h5>
+            @for (item of order.orderItems; track $index) {
+              <div class="d-flex align-items-center gap-3 mb-2">
+                @if (product(item)?.image) {
+                  <img [src]="staticURL + product(item)?.image" class="item-img rounded" alt="">
+                } @else {
+                  <div class="item-img bg-light rounded"></div>
+                }
+                <div class="flex-grow-1">
+                  @if (product(item); as p) {
+                    <a [routerLink]="'/product-list/' + p.slug">{{ p.title }}</a>
+                  } @else {
+                    <span>Product</span>
+                  }
+                  <div class="text-muted small">{{ item.price }} EGP × {{ item.quantity }}</div>
+                </div>
+                <strong>{{ item.price * item.quantity }} EGP</strong>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Delivery</h5>
+            <strong>{{ order.addressSnapshot.title }}</strong>
+            <div>{{ order.addressSnapshot.street }}, {{ order.addressSnapshot.city }}, {{ order.addressSnapshot.governorate }}</div>
+            @if (order.addressSnapshot.details) {
+              <div class="text-muted small">{{ order.addressSnapshot.details }}</div>
+            }
+            <div class="mt-2">Mobile: {{ order.mobileSnapshot }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Summary</h5>
+            <div class="d-flex justify-content-between">
+              <span>Items</span><span>{{ itemsTotal }} EGP</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Shipping</span><span>{{ order.shippingCost }} EGP</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5">
+              <span>Total</span><span>{{ order.totalPrice }} EGP</span>
+            </div>
+            <p class="text-muted small mt-2 mb-0">Payment: Cash on Delivery</p>
+
+            @if (order.status == 'pending') {
+              <button type="button" class="btn btn-outline-danger w-100 mt-3"
+                [disabled]="isCancelling" (click)="cancelOrder()">
+                {{ isCancelling ? 'Cancelling...' : 'Cancel order' }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,89 @@
+<div class="container">
+  <h1 class="mb-4">Our Products</h1>
+
+  <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="row g-2 mb-4">
+    <div class="col-12 col-md-6">
+      <input type="text" class="form-control" placeholder="Search products..." formControlName="search">
+    </div>
+
+    <div class="col-6 col-md-3">
+      <select class="form-select" formControlName="categoryId" (change)="onCategoryChange()">
+        <option value="">All categories</option>
+        @for (c of categories; track c._id) {
+          <option [value]="c._id">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <select class="form-select" formControlName="subcategoryId" (change)="applyFilters()"
+        [attr.disabled]="subcategories.length == 0 ? true : null">
+        <option value="">All subcategories</option>
+        @for (s of subcategories; track s._id) {
+          <option [value]="s._id">{{ s.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-6 col-md-2">
+      <input type="number" class="form-control" placeholder="Min price" formControlName="minPrice">
+    </div>
+
+    <div class="col-6 col-md-2">
+      <input type="number" class="form-control" placeholder="Max price" formControlName="maxPrice">
+    </div>
+
+    <div class="col-12 col-md-3">
+      <select class="form-select" formControlName="sort" (change)="applyFilters()">
+        <option value="newest">Newest</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-5 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Search</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
+    </div>
+  </form>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage && products.length == 0) {
+    <div class="alert alert-info">No products found.</div>
+  }
+
+  <div class="row g-4">
+    @for (product of products; track product._id) {
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <app-product [myProduct]="product"></app-product>
+      </div>
+    }
+  </div>
+
+  @if (totalPages > 1) {
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="page == 1">
+          <button class="page-link" (click)="goToPage(page - 1)">Previous</button>
+        </li>
+
+        @for (p of pages; track p) {
+          <li class="page-item" [class.active]="p == page">
+            <button class="page-link" (click)="goToPage(p)">{{ p }}</button>
+          </li>
+        }
+
+        <li class="page-item" [class.disabled]="page == totalPages">
+          <button class="page-link" (click)="goToPage(page + 1)">Next</button>
+        </li>
+      </ul>
+    </nav>
+  }
+</div>

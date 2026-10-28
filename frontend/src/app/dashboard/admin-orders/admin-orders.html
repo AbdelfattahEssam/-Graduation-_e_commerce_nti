@@ -1,0 +1,145 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="mb-0">Orders <span class="text-muted fs-5">({{ total }})</span></h1>
+
+  <select class="form-select w-auto" (change)="onFilterChange($event)">
+    <option value="">All statuses</option>
+    @for (s of statuses; track s) {
+      <option [value]="s">{{ s }}</option>
+    }
+  </select>
+</div>
+
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+@if (!isLoading && orders.length == 0) {
+  <div class="alert alert-info">No orders found.</div>
+}
+
+@if (orders.length > 0) {
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of orders; track order._id) {
+          <tr>
+            <td><code>#{{ order._id.slice(-6) }}</code></td>
+            <td>{{ order.date | date: 'dd MMM yyyy, hh:mm a' }}</td>
+            <td>
+              {{ order.userId.name }}
+              <div class="text-muted small">{{ order.mobileSnapshot }}</div>
+            </td>
+            <td>{{ order.totalPrice }} EGP</td>
+            <td><span class="badge" [class]="'badge ' + statusClass(order.status)">{{ order.status }}</span></td>
+            <td class="text-end">
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="toggle(order._id)">
+                {{ expandedId == order._id ? 'Hide' : 'Details' }}
+              </button>
+            </td>
+          </tr>
+
+          @if (expandedId == order._id) {
+            <tr>
+              <td colspan="6" class="bg-light">
+                <div class="row g-3 p-2">
+
+                  <div class="col-md-6">
+                    <h6>Customer</h6>
+                    <div>{{ order.userId.name }} · {{ order.userId.email }}</div>
+                    <div>Mobile: {{ order.mobileSnapshot }}</div>
+
+                    <h6 class="mt-3">Delivery address</h6>
+                    <strong>{{ order.addressSnapshot.title }}</strong>
+                    <div>{{ order.addressSnapshot.street }}, {{ order.addressSnapshot.city }}, {{ order.addressSnapshot.governorate }}</div>
+                    @if (order.addressSnapshot.details) {
+                      <div class="text-muted small">{{ order.addressSnapshot.details }}</div>
+                    }
+                  </div>
+
+                  <div class="col-md-6">
+                    <h6>Items</h6>
+                    @for (item of order.orderItems; track $index) {
+                      <div class="d-flex justify-content-between small">
+                        <span>
+                          {{ product(item)?.title || 'Product' }} × {{ item.quantity }}
+                          <span class="text-muted">({{ item.price }} EGP)</span>
+                        </span>
+                        <span>{{ item.price * item.quantity }} EGP</span>
+                      </div>
+                    }
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between small">
+                      <span>Items</span><span>{{ itemsTotal(order) }} EGP</span>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                      <span>Shipping</span><span>{{ order.shippingCost }} EGP</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold">
+                      <span>Total (Cash on Delivery)</span><span>{{ order.totalPrice }} EGP</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    @if (nextStatuses(order).length > 0) {
+                      <h6>Change status</h6>
+                      <div class="d-flex gap-2 flex-wrap">
+                        @for (s of nextStatuses(order); track s) {
+                          <button type="button" class="btn btn-sm"
+                            [class.btn-outline-danger]="isDanger(s)"
+                            [class.btn-primary]="!isDanger(s)"
+                            [disabled]="updatingId == order._id"
+                            (click)="changeStatus(order, s)">
+                            {{ s }}
+                          </button>
+                        }
+                      </div>
+                    } @else {
+                      <span class="text-muted small">This order is in a final status and cannot be changed.</span>
+                    }
+                  </div>
+
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalPages > 1) {
+    <nav class="mt-3">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="page == 1">
+          <button class="page-link" (click)="goToPage(page - 1)">Previous</button>
+        </li>
+        @for (n of pages; track n) {
+          <li class="page-item" [class.active]="n == page">
+            <button class="page-link" (click)="goToPage(n)">{{ n }}</button>
+          </li>
+        }
+        <li class="page-item" [class.disabled]="page == totalPages">
+          <button class="page-link" (click)="goToPage(page + 1)">Next</button>
+        </li>
+      </ul>
+    </nav>
+  }
+}

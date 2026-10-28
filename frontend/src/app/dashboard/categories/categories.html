@@ -1,0 +1,123 @@
+<h1 class="mb-4">Categories</h1>
+
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+<div class="row g-4">
+
+  <!-- Categories -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Categories</h5>
+
+        <form class="d-flex gap-2 mb-3" (ngSubmit)="addCategory()">
+          <input type="text" class="form-control" placeholder="New category name"
+            [formControl]="newCategory"
+            [class.is-invalid]="newCategory.invalid && newCategory.touched">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+
+        @if (!isLoading && categories.length == 0) {
+          <p class="text-muted mb-0">No categories yet.</p>
+        }
+
+        <div class="list-group">
+          @for (c of categories; track c._id) {
+            <div class="list-group-item" [class.active-item]="c._id == selectedCategoryId">
+              @if (editingCategoryId == c._id) {
+                <div class="d-flex gap-2">
+                  <input type="text" class="form-control form-control-sm" [formControl]="editName">
+                  <button type="button" class="btn btn-sm btn-success" (click)="saveCategory(c)">Save</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelEdit()">Cancel</button>
+                </div>
+              } @else {
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <button type="button" class="btn btn-link p-0 text-start name-btn" (click)="selectCategory(c._id)">
+                    {{ c.name }}
+                    @if (!c.isActive) {
+                      <span class="badge bg-secondary ms-1">Hidden</span>
+                    }
+                  </button>
+
+                  <div class="d-flex gap-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEditCategory(c)">Rename</button>
+                    <button type="button" class="btn btn-sm btn-outline-warning" (click)="toggleCategory(c)">
+                      {{ c.isActive ? 'Deactivate' : 'Activate' }}
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteCategory(c)">Delete</button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subcategories -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          Subcategories
+          @if (selectedCategory) {
+            <span class="text-muted fs-6">of {{ selectedCategory.name }}</span>
+          }
+        </h5>
+
+        @if (!selectedCategoryId) {
+          <p class="text-muted mb-0">Select a category first.</p>
+        } @else {
+          <form class="d-flex gap-2 mb-3" (ngSubmit)="addSubcategory()">
+            <input type="text" class="form-control" placeholder="New subcategory name"
+              [formControl]="newSubcategory"
+              [class.is-invalid]="newSubcategory.invalid && newSubcategory.touched">
+            <button type="submit" class="btn btn-primary">Add</button>
+          </form>
+
+          @if (subcategories.length == 0) {
+            <p class="text-muted mb-0">No subcategories yet.</p>
+          }
+
+          <div class="list-group">
+            @for (s of subcategories; track s._id) {
+              <div class="list-group-item">
+                @if (editingSubId == s._id) {
+                  <div class="d-flex gap-2">
+                    <input type="text" class="form-control form-control-sm" [formControl]="editName">
+                    <button type="button" class="btn btn-sm btn-success" (click)="saveSub(s)">Save</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelEdit()">Cancel</button>
+                  </div>
+                } @else {
+                  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span>
+                      {{ s.name }}
+                      @if (!s.isActive) {
+                        <span class="badge bg-secondary ms-1">Hidden</span>
+                      }
+                    </span>
+
+                    <div class="d-flex gap-1">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEditSub(s)">Rename</button>
+                      <button type="button" class="btn btn-sm btn-outline-warning" (click)="toggleSub(s)">
+                        {{ s.isActive ? 'Deactivate' : 'Activate' }}
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteSub(s)">Delete</button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

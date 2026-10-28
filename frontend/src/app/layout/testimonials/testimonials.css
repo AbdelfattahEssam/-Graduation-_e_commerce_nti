@@ -1,0 +1,22 @@
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: #ccc;
+    padding: 0 2px;
+    cursor: pointer;
+}
+
+.star-btn.active {
+    color: #f5a623;
+}
+
+.stars-display {
+    color: #ccc;
+    font-size: 1.2rem;
+}
+
+.stars-display .filled {
+    color: #f5a623;
+}

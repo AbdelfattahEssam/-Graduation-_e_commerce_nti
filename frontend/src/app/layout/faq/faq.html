@@ -1,0 +1,30 @@
+<div class="container" style="max-width: 800px;">
+  <h1 class="mb-4">Frequently Asked Questions</h1>
+
+  @if (isLoading) {
+    <p>Loading...</p>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage && faqs.length == 0) {
+    <div class="alert alert-info">No questions yet.</div>
+  }
+
+  <div class="accordion">
+    @for (faq of faqs; track faq._id; let i = $index) {
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button type="button" class="accordion-button" [class.collapsed]="openIndex !== i" (click)="toggle(i)">
+            {{ faq.question }}
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse" [class.show]="openIndex === i">
+          <div class="accordion-body">{{ faq.answer }}</div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

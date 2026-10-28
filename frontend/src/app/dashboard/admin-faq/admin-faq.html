@@ -1,0 +1,64 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="mb-0">FAQ</h1>
+  @if (!showForm) {
+    <button type="button" class="btn btn-primary" (click)="openAdd()">Add question</button>
+  }
+</div>
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+
+@if (showForm) {
+  <form [formGroup]="form" (ngSubmit)="save()" class="card card-body mb-4">
+    <h5>{{ editingId ? 'Edit question' : 'New question' }}</h5>
+
+    <div class="mb-3">
+      <label class="form-label">Question</label>
+      <input type="text" class="form-control" formControlName="question"
+        [class.is-invalid]="form.controls.question.invalid && form.controls.question.touched">
+      @if (form.controls.question.invalid && form.controls.question.touched) {
+        <div class="invalid-feedback">Question is required</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Answer</label>
+      <textarea class="form-control" rows="3" formControlName="answer"
+        [class.is-invalid]="form.controls.answer.invalid && form.controls.answer.touched"></textarea>
+      @if (form.controls.answer.invalid && form.controls.answer.touched) {
+        <div class="invalid-feedback">Answer is required</div>
+      }
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+        {{ isSaving ? 'Saving...' : 'Save' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary" (click)="closeForm()">Cancel</button>
+    </div>
+  </form>
+}
+
+@if (isLoading) {
+  <p>Loading...</p>
+}
+
+@if (!isLoading && faqs.length == 0) {
+  <div class="alert alert-info">No questions yet.</div>
+}
+
+@for (faq of faqs; track faq._id) {
+  <div class="card mb-2">
+    <div class="card-body d-flex justify-content-between align-items-start gap-3">
+      <div>
+        <strong>{{ faq.question }}</strong>
+        <p class="mb-0 text-muted">{{ faq.answer }}</p>
+      </div>
+      <div class="d-flex gap-1 flex-shrink-0">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="openEdit(faq)">Edit</button>
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(faq)">Delete</button>
+      </div>
+    </div>
+  </div>
+}
